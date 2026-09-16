@@ -1,0 +1,45 @@
+services:
+  # --- FastAPI + PaddleOCR + TrOCR backend ---
+  - type: web
+    name: fyp-ocr-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: standard
+    envVars:
+      - key: OLLAMA_HOST
+        value: https://fyp-ollama.onrender.com
+      - key: CORS_ORIGINS
+        value: https://fyp-ocr-frontend.onrender.com
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # --- Ollama running Qwen 2.5 ---
+  - type: web
+    name: fyp-ollama
+    runtime: docker
+    dockerfilePath: ./ollama.Dockerfile
+    dockerContext: .
+    plan: standard
+    disk:
+      name: ollama-models
+      mountPath: /root/.ollama
+      sizeGB: 10
+    envVars:
+      - key: OLLAMA_HOST
+        value: "0.0.0.0:10000"
+    autoDeploy: true
+
+  # --- Next.js frontend ---
+  - type: web
+    name: fyp-ocr-frontend
+    runtime: node
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm run start
+    plan: starter
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://fyp-ocr-backend.onrender.com
+    autoDeploy: true
