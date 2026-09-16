@@ -1,0 +1,23 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+fastapi
+uvicorn[standard]
+gunicorn
+python-multipart
+
+# OCR / CV
+opencv-python-headless
+paddlepaddle
+paddleocr
+transformers
+torch
+pillow
+pdf2image
+
+# NLP / post-processing
+symspellpy
+ollama
+
+# General
+python-dotenv
+numpy
